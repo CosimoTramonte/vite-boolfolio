@@ -29,7 +29,9 @@ export default {
       first_page: null,
       last_page: null,
       current_page: null,
-      last_page_number:null
+      last_page_number:null,
+      kinds:[],
+      technologies:[]
     }
   },
 
@@ -44,11 +46,33 @@ export default {
             this.current_page = result.data.current_page;
             this.last_page_number = result.data.last_page;
           })
-    }
-  },
+    },
 
+    getKinds(){
+      axios.get(store.apiUrl + 'projects/kinds')
+            .then(result =>{
+              this.kinds = result.data;
+            })
+    },
+
+    getProjectsKinds(id){
+      this.getApi(store.apiUrl + 'projects/projects-kinds/' + id)
+      console.log(id);
+    },
+
+    getTechnologies(){
+      axios.get(store.apiUrl + 'projects/technologies')
+            .then(result =>{
+              this.technologies = result.data;
+            })
+    }
+
+  },
+ 
   mounted(){
     this.getApi(store.apiUrl + 'projects');
+    this.getKinds();
+    this.getTechnologies();
   }
 }
 </script>
@@ -56,11 +80,26 @@ export default {
 <template>
 
 <div class="container py-5">
+  
+      <div class="filterDiv">
+        <h5>Filter by Kind of work:</h5>
+        <button
+        v-for="kind in kinds" :key="kind.id"
+        @click="getProjectsKinds(kind.id)"
+        class="btn btn-dark me-3"
+        >{{ kind.name }}</button>
+
+        <h5 class="pt-3">Filter by technologies udes:</h5>
+        <button
+        v-for="technology in technologies" :key="technology.id"
+        class="btn btn-dark me-3"
+        ><i class="fa-brands" :class="'fa-' + technology.name"></i></button>
+      </div>
 
       <div class="cardContainer py-5">
 
-        <div class="divAside">
-        </div>
+
+        <div class="divAside"></div>
 
         <swiper
         :grabCursor="true"
