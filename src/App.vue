@@ -2,20 +2,22 @@
 <script>
 import { store } from './store/store.js';
 import axios from 'axios';
-import CardContainer from './components/CardContainer.vue';
+import Header from './components/Header.vue';
 
 export default {
   name: "App",
   components:{
-    CardContainer
+    Header
   }
 }
 </script>
 
 <template>
-  
-  <router-view></router-view>
-  <CardContainer/> 
+
+  <div class="container py-5">
+    <Header/>
+    <router-view></router-view>
+  </div>
 
 </template>
 

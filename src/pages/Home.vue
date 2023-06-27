@@ -5,7 +5,9 @@ export default {
 </script>
 
 <template>
-    <h1>HOME</h1>
+    <div class="page-wrapper">
+        <h1>Home</h1>
+    </div>
 </template>
 
 

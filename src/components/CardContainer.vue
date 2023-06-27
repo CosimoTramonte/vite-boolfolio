@@ -56,8 +56,6 @@ export default {
 <template>
 
 <div class="container py-5">
-      
-      <h1>Projects List</h1>
 
       <div class="cardContainer py-5">
 

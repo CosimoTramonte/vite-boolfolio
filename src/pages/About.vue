@@ -1,12 +1,12 @@
 <script>
 export default {
-    name:"Contacts",
+    name:"About",
 }
 </script>
 
 <template>
     <div class="page-wrapper">
-        <h1>Contacts</h1>
+        <h1>About us</h1>
     </div>
 </template>
 
