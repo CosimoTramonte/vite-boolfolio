@@ -31,12 +31,16 @@ export default {
       current_page: null,
       last_page_number:null,
       kinds:[],
-      technologies:[]
+      technologies:[],
+      id_kind: 0
     }
   },
 
   methods:{
     getApi(endpoint){
+
+      this.id_kind = 0;
+
       axios.get(endpoint)
           .then(result=>{
             this.projects = result.data.data;
@@ -57,7 +61,7 @@ export default {
 
     getProjectsKinds(id){
       this.getApi(store.apiUrl + 'projects/projects-kinds/' + id)
-      console.log(id);
+      this.id_kind = id
     },
 
     getTechnologies(){
@@ -86,6 +90,7 @@ export default {
         <button
         v-for="kind in kinds" :key="kind.id"
         @click="getProjectsKinds(kind.id)"
+        :disabled="kind.id == id_kind"
         class="btn btn-dark me-3"
         >{{ kind.name }}</button>
 
@@ -94,6 +99,10 @@ export default {
         v-for="technology in technologies" :key="technology.id"
         class="btn btn-dark me-3"
         ><i class="fa-brands" :class="'fa-' + technology.name"></i></button>
+
+        <h5 class="pt-3">All Projects:</h5>
+        <button class="btn btn-dark">All</button>
+
       </div>
 
       <div class="cardContainer py-5">
@@ -160,6 +169,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+  @use "../scss/main.scss";
 
 .cardContainer{
   width: 100%;

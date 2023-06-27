@@ -33,7 +33,7 @@ export default {
     </li>
   </ul>
   <div class="d-flex justify-content-center m-2">
-      <a href="#" class="btn btn-success w-50">Details</a>
+      <a href="#" class="btn btn-dark w-25">Details</a>
   </div>
 </div>
   
