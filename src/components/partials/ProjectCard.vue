@@ -4,9 +4,10 @@ export default {
     name: 'ProjectCrad',
     props:{
         name: String,
+        slug: String,
         type: String,
         kind: String,
-        technologies: Array
+        technologies: Array,
     }
     
 }
@@ -33,7 +34,7 @@ export default {
     </li>
   </ul>
   <div class="d-flex justify-content-center m-2">
-      <a href="#" class="btn btn-dark w-25">Details</a>
+    <router-link class="btn btn-dark" :to="{ name: 'DetailProject', params:{ slug: slug }}">Details</router-link>
   </div>
 </div>
   

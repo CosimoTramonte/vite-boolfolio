@@ -150,6 +150,7 @@ export default {
             >
               <ProjectCardVue
               :name="card.name"
+              :slug="card.slug"
               :type="card.type"
               :kind="card.kind.name"
               :technologies="card.technologies"
