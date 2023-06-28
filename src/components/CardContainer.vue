@@ -9,13 +9,15 @@ import 'swiper/css/effect-creative';
 import '../style.css';
 import 'swiper/css/pagination';
 import { EffectCreative, Pagination } from 'swiper';
+import LoaderVue from './partials/Loader.vue';
 
 export default {
     name: 'CardContainer',
     components:{
       ProjectCardVue,
       Swiper,
-      SwiperSlide
+      SwiperSlide,
+      LoaderVue
     }, 
     setup() {
       return {
@@ -32,14 +34,17 @@ export default {
       last_page_number:null,
       kinds:[],
       technologies:[],
-      id_kind: 0
+      id_kind: 0,
+      id_tech: 0,
+      loaded: false
     }
   },
 
   methods:{
-    getApi(endpoint){
-
+    getApi(endpoint = store.apiUrl + 'projects'){
+      this.loaded = false;
       this.id_kind = 0;
+      this.id_tech = 0;
 
       axios.get(endpoint)
           .then(result=>{
@@ -49,6 +54,7 @@ export default {
             this.last_page = result.data.last_page_url;
             this.current_page = result.data.current_page;
             this.last_page_number = result.data.last_page;
+            this.loaded = true
           })
     },
 
@@ -69,12 +75,17 @@ export default {
             .then(result =>{
               this.technologies = result.data;
             })
-    }
+    },
+
+    getProjectsTechnologies(id){
+      this.getApi(store.apiUrl + 'projects/projects-technologies/' + id)
+      this.id_tech = id
+    },
 
   },
  
   mounted(){
-    this.getApi(store.apiUrl + 'projects');
+    this.getApi();
     this.getKinds();
     this.getTechnologies();
   }
@@ -84,87 +95,92 @@ export default {
 <template>
 
 <div class="container py-5">
+
+  <LoaderVue v-if="!loaded"/>
   
-      <div class="filterDiv">
-        <h5>Filter by Kind of work:</h5>
-        <button
-        v-for="kind in kinds" :key="kind.id"
-        @click="getProjectsKinds(kind.id)"
-        :disabled="kind.id == id_kind"
-        class="btn btn-dark me-3"
-        >{{ kind.name }}</button>
+      <div v-else class="wrapper">
+        <div class="filterDiv">
+          <h5>Filter by Kind of work:</h5>
+          <button
+          v-for="kind in kinds" :key="kind.id"
+          @click="getProjectsKinds(kind.id)"
+          :disabled="kind.id == id_kind"
+          class="btn btn-dark me-3"
+          >{{ kind.name }}</button>
 
-        <h5 class="pt-3">Filter by technologies udes:</h5>
-        <button
-        v-for="technology in technologies" :key="technology.id"
-        class="btn btn-dark me-3"
-        ><i class="fa-brands" :class="'fa-' + technology.name"></i></button>
+          <h5 class="pt-3">Filter by technologies udes:</h5>
+          <button
+          v-for="technology in technologies" :key="technology.id"
+          @click="getProjectsTechnologies(technology.id)"
+          :disabled="technology.id == id_tech"
+          class="btn btn-dark me-3"
+          ><i class="fa-brands" :class="'fa-' + technology.name"></i></button>
 
-        <h5 class="pt-3">All Projects:</h5>
-        <button class="btn btn-dark">All</button>
+          <h5 class="pt-3">All Projects:</h5>
+          <button class="btn btn-dark" @click="getApi()">All</button>
+        </div>
 
-      </div>
-
-      <div class="cardContainer py-5">
+        <div class="cardContainer py-5">
 
 
-        <div class="divAside"></div>
+          <div class="divAside"></div>
 
-        <swiper
-        :grabCursor="true"
-        :effect="'creative'"
-        :creativeEffect="{
-          prev: {
-            shadow: false,
-            translate: ['-120%', 0, -500],
-          },
-          next: {
-            shadow: false,
-            translate: ['120%', 0, -500],
-          },
-        }"
-        :pagination="{
-          clickable: true,
-        }"
-        :modules="modules"
-        class="mySwiper2"
-        >
-          <swiper-slide
-          v-for="(card,index) in projects" :key="index"
-          class="d-flex justify-content-end align-items-start"
+          <swiper
+          :grabCursor="true"
+          :effect="'creative'"
+          :creativeEffect="{
+            prev: {
+              shadow: false,
+              translate: ['-120%', 0, -500],
+            },
+            next: {
+              shadow: false,
+              translate: ['120%', 0, -500],
+            },
+          }"
+          :pagination="{
+            clickable: true,
+          }"
+          :modules="modules"
+          class="mySwiper2"
           >
-            <ProjectCardVue
-            :name="card.name"
-            :type="card.type"
-            :kind="card.kind.name"
-            :technologies="card.technologies"
-            class="w-75"/>
-          </swiper-slide>
-        </swiper>
+            <swiper-slide
+            v-for="(card,index) in projects" :key="index"
+            class="d-flex justify-content-end align-items-start"
+            >
+              <ProjectCardVue
+              :name="card.name"
+              :type="card.type"
+              :kind="card.kind.name"
+              :technologies="card.technologies"
+              class="w-75"/>
+            </swiper-slide>
+          </swiper>
 
-      </div>
+        </div>
 
-      <div class="d-flex justify-content-end">
-        <button 
-        @click="getApi(first_page)"
-        :disabled="current_page == 1"
-        class="btn btn-warning mx-1"
-        >First Page</button>
-        <button 
-        v-for="(link,index) in links" :key="index"
-        v-html="link.label"
-        @click="getApi(link.url)"
-        :disabled="link.active || !link.url"
-        class="btn btn-warning mx-1"
-        ></button>
-        <button 
-        @click="getApi(last_page)"
-        :disabled="current_page == last_page_number"
-        class="btn btn-warning mx-1"
-        >Last Page</button>
-      </div>
+        <div class="d-flex justify-content-end">
+          <button 
+          @click="getApi(first_page)"
+          :disabled="current_page == 1"
+          class="btn btn-warning mx-1"
+          >First Page</button>
+          <button 
+          v-for="(link,index) in links" :key="index"
+          v-html="link.label"
+          @click="getApi(link.url)"
+          :disabled="link.active || !link.url"
+          class="btn btn-warning mx-1"
+          ></button>
+          <button 
+          @click="getApi(last_page)"
+          :disabled="current_page == last_page_number"
+          class="btn btn-warning mx-1"
+          >Last Page</button>
+        </div>
 
-    </div>
+  </div>
+</div>
   
 </template>
 
